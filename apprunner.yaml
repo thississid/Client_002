@@ -2,18 +2,13 @@ version: 1.0
 runtime: python3
 build:
   commands:
-    pre_build:
-      - echo "Pre-build phase"
     build:
       - echo "Installing Python dependencies..."
-      - /usr/bin/python3 -m ensurepip --upgrade
-      - /usr/bin/python3 -m pip install --upgrade pip
-      - /usr/bin/python3 -m pip install -r requirements.txt
-    post_build:
-      - echo "Build completed successfully"
+      - python3 -m pip install --upgrade pip
+      - python3 -m pip install -r requirements.txt
 run:
   runtime-version: 3.11
-  command: /usr/bin/python3 -m uvicorn app:app --host 0.0.0.0 --port 8080
+  command: python3 -m uvicorn app:app --host 0.0.0.0 --port 8080
   network:
     port: 8080
   env:
