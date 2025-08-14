@@ -24,8 +24,14 @@
 
 ## AWS App Runner Deployment Options
 
-### Option 1: Source Code Deployment
-Use the `apprunner.yaml` configuration file for direct source code deployment from GitHub.
+### Option 1: Source Code Deployment (Manual Configuration)
+Configure directly in AWS App Runner console without using apprunner.yaml file.
+
+**Manual Configuration Steps:**
+1. **Runtime**: Python 3.11
+2. **Build Command**: `python -m pip install --upgrade pip && pip install -r requirements.txt`
+3. **Start Command**: `python -m uvicorn app:app --host 0.0.0.0 --port 8080`
+4. **Port**: 8080
 
 ### Option 2: Container Deployment
 Use the `Dockerfile` for container-based deployment via ECR.
