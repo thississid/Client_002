@@ -78,6 +78,7 @@ pip install -r requirements.txt
 #### Payment Gateway Configuration
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `CLIENT_ID` | `client_002` | Client identifier |
 | `FORM_ID` | `250729103005965673` | Datatrans form identifier |
 | `MERCHANT_ID` | `1110020135` | Merchant identifier |
 | `TOKENIZATION_URL` | Datatrans SecureFields API | Card tokenization endpoint |
@@ -259,6 +260,7 @@ All environment variables can be passed using `-e` flag or via docker-compose en
 | `ENABLE_LOOP` | `true` | Enable background automation |
 | `CSV_PATH` | `data/Client002.csv` | Customer data file path |
 | `CARDS_PATH` | `config/cards.json` | Test cards configuration path |
+| `CLIENT_ID` | `client_002` | Client identifier |
 | `FORM_ID` | `250729103005965673` | Datatrans form identifier |
 | `MERCHANT_ID` | `1110020135` | Merchant identifier |
 

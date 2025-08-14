@@ -14,8 +14,9 @@
 - **CARDS_PATH**: `config/cards.json`
 
 ### Payment Gateway Configuration
-- **FORM_ID**: `250729103005965673`
-- **MERCHANT_ID**: `1110020135`
+- **CLIENT_ID**: `client_002` (Client identifier)
+- **FORM_ID**: `250729103005965673` (Datatrans form identifier)
+- **MERCHANT_ID**: `1110020135` (Merchant identifier)
 
 ### Optional API URLs (using defaults if not set)
 - **TOKENIZATION_URL**: `https://pay.sandbox.datatrans.com/upp/payment/SecureFields/paymentField`
