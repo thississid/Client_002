@@ -1,15 +1,13 @@
 version: 1.0
-runtime: python3
+runtime: python3.11 # Use a supported, modern Python version
+
 build:
   commands:
     build:
-      - echo "Installing Python dependencies..."
-      - python3 -m pip install --upgrade pip
-      - python3 -m pip install -r requirements.txt
+      - pip install -r requirements.txt
+
 run:
-  # Explicitly set a supported Python runtime version (ap-south-1 currently supports 3.8)
-  runtime-version: 3.8
-  command: python3 -m uvicorn app:app --host 0.0.0.0 --port 8080
+  command: python -m uvicorn app:app --host 0.0.0.0 --port 8080
   network:
     port: 8080
   env:
