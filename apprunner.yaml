@@ -7,7 +7,8 @@ build:
       - python3 -m pip install --upgrade pip
       - python3 -m pip install -r requirements.txt
 run:
-  runtime-version: 3.9
+  # Explicitly set a supported Python runtime version (ap-south-1 currently supports 3.8)
+  runtime-version: 3.8
   command: python3 -m uvicorn app:app --host 0.0.0.0 --port 8080
   network:
     port: 8080
