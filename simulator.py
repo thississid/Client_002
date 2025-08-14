@@ -14,7 +14,7 @@ CARDS_PATH = os.getenv("CARDS_PATH", "config/cards.json")
 TOKENIZATION_URL = os.getenv("TOKENIZATION_URL", "https://pay.sandbox.datatrans.com/upp/payment/SecureFields/paymentField")
 CHECKOUT_URL     = os.getenv("CHECKOUT_URL",     "https://checkout-api-dev.payintelli.com/api/v1/checkout/create")
 PAYMENT_URL      = os.getenv("PAYMENT_URL",      "https://api-dev.payintelli.com/api/v1/payments/create")
-CLIENT_ID        = os.getenv("CLIENT_ID", "client_002")
+CLIENT_ID        = "client_002"
 FORM_ID          = os.getenv("FORM_ID", "250729103005965673")
 MERCHANT_ID      = os.getenv("MERCHANT_ID", "1110020135")
 
@@ -107,6 +107,8 @@ def create_checkout(amount, currency):
             "webhookUrl": "https://example.com/webhook"
         }
     }
+
+    print(payload, flush=True)
 
     r = requests.post(CHECKOUT_URL, json=payload, timeout=60)
     if r.status_code != 200:

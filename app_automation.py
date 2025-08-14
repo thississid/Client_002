@@ -66,7 +66,7 @@ def create_checkout(amount, currency):
         "clientOrderDetails": {
             "clientOrderId": fake.uuid4(),
             "description": "Subscription payment for SamagyaanDataSolutions",
-            "clientId": "client_001"
+            "clientId": "client_002"
         },
         "userDetails": {
             "clientUserId":fake.uuid4(),
