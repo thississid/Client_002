@@ -8,13 +8,25 @@ import random
 import traceback
 import datetime
 
+# --- Helpers ---------------------------------------------------------------
+def _int_env(name: str, default: int) -> int:
+    val = os.getenv(name)
+    if val is None or val.strip() == "":
+        return default
+    try:
+        return int(val)
+    except ValueError:
+        print(f"Invalid int for {name}='{val}', falling back to {default}", flush=True)
+        return default
+
 app = FastAPI()
 
 # Configurable parameters via environment variables
-RUN_INTERVAL = int(os.getenv("RUN_INTERVAL_SECONDS", "300"))  # Default: 5 min
-RUN_JITTER   = int(os.getenv("RUN_JITTER_SECONDS", "120"))    # Default: ±2 min
-ITER_DEFAULT = int(os.getenv("ITERATIONS_PER_RUN", "2"))      # Default: 2 iterations
+RUN_INTERVAL = _int_env("RUN_INTERVAL_SECONDS", 300)    # Default: 5 min
+RUN_JITTER   = _int_env("RUN_JITTER_SECONDS", 120)      # Default: ±2 min
+ITER_DEFAULT = _int_env("ITERATIONS_PER_RUN", 2)        # Default: 2 iterations
 ENABLE_LOOP  = os.getenv("ENABLE_LOOP", "true").lower() == "true"
+LOOP_START_DELAY = _int_env("LOOP_START_DELAY_SECONDS", 5)  # Grace period before starting loop
 
 def _run_once(n: int):
     """
@@ -53,12 +65,23 @@ def loop():
 
 @app.on_event("startup")
 def startup():
-    """
-    Starts the background scheduler thread on application startup.
+    """Starts the background scheduler thread on application startup with an optional delay.
+
+    Delay gives the platform (e.g. AWS App Runner) time to mark the service healthy
+    before heavy work (CSV + pandas import, etc.) begins.
     """
     if ENABLE_LOOP:
-        print(f"Background loop enabled. Interval={RUN_INTERVAL}s, Jitter={RUN_JITTER}s", flush=True)
-        threading.Thread(target=loop, daemon=True).start()
+        print(
+            f"Background loop enabled. Interval={RUN_INTERVAL}s, Jitter={RUN_JITTER}s, StartDelay={LOOP_START_DELAY}s",
+            flush=True,
+        )
+
+        def _delayed_start():
+            if LOOP_START_DELAY > 0:
+                time.sleep(LOOP_START_DELAY)
+            loop()
+
+        threading.Thread(target=_delayed_start, daemon=True).start()
     else:
         print("Background loop disabled by ENABLE_LOOP env var.", flush=True)
 

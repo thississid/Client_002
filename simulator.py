@@ -24,10 +24,8 @@ fake = Faker()
 with open(CARDS_PATH, "r") as f:
     CARDS = json.load(f)
 
-# Load CSV data
-print("Loading CSV data...")
-df = pd.read_csv(CSV_PATH, low_memory=False)
-print(f"Loaded {len(df)} rows from CSV")
+# Lazy-loaded CSV dataframe placeholder
+df = None
 
 def tokenize_card(card):
     """Call Datatrans SecureFields API to tokenize card details"""
@@ -61,6 +59,17 @@ def _clean_phone(num: str) -> str:
     return raw[:12]
 
 def create_checkout(amount, currency):
+    global df
+    if df is None:
+        print(f"Loading CSV from {CSV_PATH} ...", flush=True)
+        try:
+            import pandas as pd  # local import to allow deferred failure & smaller startup cost
+            df = pd.read_csv(CSV_PATH, low_memory=False)
+            print(f"Loaded {len(df)} rows from CSV", flush=True)
+        except Exception as e:
+            print(f"Failed to load CSV: {e}", flush=True)
+            raise
+
     row = df.sample(1).iloc[0]
 
     first_name = row.get('First_Name')
