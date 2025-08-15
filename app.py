@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from typing import Optional
 import os
+import sys
 import threading
 import time
 import random
@@ -20,6 +21,10 @@ def _int_env(name: str, default: int) -> int:
         return default
 
 app = FastAPI()
+print(
+    f"[BOOT] App module loaded. Python={sys.version.split()[0]} CWD={os.getcwd()}",
+    flush=True,
+)
 
 # Configurable parameters via environment variables
 RUN_INTERVAL = _int_env("RUN_INTERVAL_SECONDS", 300)    # Default: 5 min
@@ -70,20 +75,41 @@ def startup():
     Delay gives the platform (e.g. AWS App Runner) time to mark the service healthy
     before heavy work (CSV + pandas import, etc.) begins.
     """
-    if ENABLE_LOOP:
+    try:
         print(
-            f"Background loop enabled. Interval={RUN_INTERVAL}s, Jitter={RUN_JITTER}s, StartDelay={LOOP_START_DELAY}s",
+            f"[STARTUP] Settings: ENABLE_LOOP={ENABLE_LOOP} RUN_INTERVAL={RUN_INTERVAL} RUN_JITTER={RUN_JITTER} ITER_DEFAULT={ITER_DEFAULT} START_DELAY={LOOP_START_DELAY}",
+            flush=True,
+        )
+        # Log important file paths & existence
+        csv_exists = os.path.isfile(os.getenv("CSV_PATH", "data/Client002.csv"))
+        cards_exists = os.path.isfile(os.getenv("CARDS_PATH", "config/cards.json"))
+        print(
+            f"[STARTUP] CSV_PATH={os.getenv('CSV_PATH','data/Client002.csv')} exists={csv_exists}",
+            flush=True,
+        )
+        print(
+            f"[STARTUP] CARDS_PATH={os.getenv('CARDS_PATH','config/cards.json')} exists={cards_exists}",
             flush=True,
         )
 
-        def _delayed_start():
-            if LOOP_START_DELAY > 0:
-                time.sleep(LOOP_START_DELAY)
-            loop()
+        if ENABLE_LOOP:
+            print(
+                f"[STARTUP] Background loop will start after {LOOP_START_DELAY}s delay.",
+                flush=True,
+            )
 
-        threading.Thread(target=_delayed_start, daemon=True).start()
-    else:
-        print("Background loop disabled by ENABLE_LOOP env var.", flush=True)
+            def _delayed_start():
+                if LOOP_START_DELAY > 0:
+                    time.sleep(LOOP_START_DELAY)
+                loop()
+
+            threading.Thread(target=_delayed_start, daemon=True).start()
+        else:
+            print("[STARTUP] Background loop disabled by ENABLE_LOOP env var.", flush=True)
+    except Exception as e:
+        # Never let a startup logging error kill the service
+        print(f"[STARTUP][ERROR] Unexpected error during startup logging: {e}", flush=True)
+        traceback.print_exc()
 
 @app.get("/health")
 def health():
