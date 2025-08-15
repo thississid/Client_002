@@ -27,17 +27,15 @@ The service consists of three main components:
 
 ```
 Client_002/
-├── app.py                      # Main FastAPI application
-├── simulator.py                # Payment simulation logic
-├── requirements.txt            # Python dependencies
-├── Dockerfile                  # Container configuration
-├── apprunner.yaml             # AWS App Runner configuration
-├── AWS_DEPLOYMENT_CONFIG.md   # Deployment documentation
-├── README.md                  # This file
+├── app.py               # Main FastAPI application
+├── simulator.py         # Payment simulation logic
+├── app_automation.py    # Automation / scheduling utilities
+├── requirements.txt     # Python dependencies
+├── README.md            # Project documentation
 ├── config/
-│   └── cards.json             # Test payment cards configuration
+│   └── cards.json       # Test payment cards configuration
 └── data/
-    └── Client002.csv          # Customer data for testing
+   └── Client002.csv    # Customer data for testing
 ```
 
 ## Dependencies
@@ -189,28 +187,11 @@ curl http://localhost:8080/health
 curl -X POST http://localhost:8080/run?iterations=1
 ```
 
-## Docker Deployment
+## AWS App Runner Deployment (Source Code)
 
-### Building the Image
-```bash
-docker build -t client-002 .
-```
+You can deploy directly from source without any container or YAML definitions:
 
-### Running the Container
-```bash
-docker run -p 8080:8080 \
-  -e RUN_INTERVAL_SECONDS=300 \
-  -e ITERATIONS_PER_RUN=2 \
-  -e ENABLE_LOOP=true \
-  client-002
-```
-
-### Environment Variables in Docker
-All environment variables can be passed using `-e` flag or via docker-compose environment section.
-
-## AWS App Runner Deployment
-
-### Option 1: Source Code Deployment (Manual Configuration)
+### Steps
 
 1. **Push to GitHub**: Commit all files to your GitHub repository
 2. **Create App Runner Service**:
@@ -227,25 +208,6 @@ All environment variables can be passed using `-e` flag or via docker-compose en
    - **Port**: 8080
 
 4. **Environment Variables**: Configure in App Runner console (see section below)
-
-### Option 2: Container Deployment
-
-1. **Build and Push to ECR**:
-   ```bash
-   # Build image
-   docker build -t client-002 .
-   
-   # Tag for ECR
-   docker tag client-002:latest <account-id>.dkr.ecr.<region>.amazonaws.com/client-002:latest
-   
-   # Push to ECR
-   docker push <account-id>.dkr.ecr.<region>.amazonaws.com/client-002:latest
-   ```
-
-2. **Create App Runner Service**:
-   - Choose "Container registry"
-   - Select your ECR repository
-   - Configure environment variables in App Runner console
 
 ### Environment Variables in AWS App Runner
 
